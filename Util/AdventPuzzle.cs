@@ -77,7 +77,7 @@ namespace Util
                 toClipBoard = solution;
                 TimeSpan secondsElapsed = watch.Elapsed;
 
-                PrintPrettyResults(secondsElapsed, solution);
+                PrettyPrintResults(secondsElapsed, solution);
 
 
             }
@@ -93,12 +93,12 @@ namespace Util
             }
         }
 
-        private void PrintPrettyResults(TimeSpan duration, string result)
+        private void PrettyPrintResults(TimeSpan duration, string result)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write($"Duration: ");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(duration.TotalSeconds.ToString("0.000s"));
+            Console.WriteLine(duration.TotalSeconds.ToString());
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write($"Solution: ");
@@ -114,13 +114,10 @@ namespace Util
 
             Console.WriteLine(error);
         }
-
-
     }
 
     public enum Puzzle
     {
-     
         First,
         Second,
         Both
