@@ -19,7 +19,7 @@ namespace Util
 
         public T ReadInputText<T>()
         {
-            return (T)Convert.ChangeType(File.ReadAllLines(inputPath), typeof(T));
+            return (T)Convert.ChangeType(File.ReadAllText(inputPath), typeof(T));
         }
 
         protected abstract string SolveFirstPuzzle();
