@@ -11,15 +11,55 @@ namespace Day13
         protected override string SolveFirstPuzzle()
         {
             string[] input = ReadInputArray<string>();
+            char[][] rails = rails = input.Select(c => c.ToCharArray()).ToArray();
+            HashSet<Cart> carts = ParseRailsAndCarts(input, ref rails);
 
-            var rails = input.Select(c => c.ToCharArray()).ToArray();
-            HashSet<Cart> carts = new HashSet<Cart>();
+
+            while (true)
+            {
+                foreach (var cart in carts.OrderBy(c => c.y).ThenBy(c => c.x))
+                {
+                    cart.Move(rails);
+                    if (carts.Count(c => c.Position == cart.Position) > 1)
+                        return cart.x + "," + cart.y;
+                }
+
+            }
+        }
+
+        protected override string SolveSecondPuzzle()
+        {
+            string[] input = ReadInputArray<string>();
+            char[][] rails = rails = input.Select(c => c.ToCharArray()).ToArray();
+            HashSet<Cart> carts = ParseRailsAndCarts(input, ref rails);
+
+            while (carts.Count > 1)
+            {
+                foreach (var cart in carts.OrderBy(c => c.y).ThenBy(c => c.x))
+                {
+                    cart.Move(rails);
+
+                    if(carts.Count(c => c.Position == cart.Position) > 1)
+                        carts.RemoveWhere(x => x.Position == cart.Position);
+                     
+                }
+            }
+
+            return carts.Single().Position;
+        }
+
+        private HashSet<Cart> ParseRailsAndCarts(string[] input, ref char[][] rails)
+        {
+            rails = input.Select(c => c.ToCharArray()).ToArray();
+            var carts = new HashSet<Cart>();
+
+            char[] directions = new char[]{ 'v', '<', '>', '^' };
 
             for (int y = 0; y < rails.Length; y++)
             {
                 for (int x = 0; x < rails[0].Length; x++)
                 {
-                    if (rails[y][x] == '<' || rails[y][x] == '>' || rails[y][x] == '^' || rails[y][x] == 'v')
+                    if (directions.Contains(rails[y][x]))
                     {
                         carts.Add(new Cart
                         {
@@ -34,29 +74,9 @@ namespace Day13
                             rails[y][x] = '|';
                     }
                 }
-                
             }
 
-            while (true)
-            {
-                foreach (var cart in carts.OrderBy(c => c.y).ThenBy(c => c.x))
-                {
-                    cart.Move(rails);
-                    Console.WriteLine(cart);
-                    if (carts.Select(c => c.Position()).Count(c => c == cart.Position()) > 1)
-                        return cart.x + "," + cart.y;
-                }
-                Console.WriteLine();
-
-            }
-
-                return null;
-
-        }
-
-        protected override string SolveSecondPuzzle()
-        {
-            throw new NotImplementedException();
+            return carts;
         }
     }
 
@@ -67,10 +87,8 @@ namespace Day13
         public char direction;
         int turn = 0;
 
-        public (int,int) Position()
-        {
-            return (x, y);
-        }
+        public string Position { get { return $"{x},{y}"; } }
+
 
         public void Move(char[][] map)
         {
