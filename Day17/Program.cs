@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Day15
+namespace Day17
 {
     class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
-            Day15 d = new Day15();
-            d.Solve(Util.Puzzle.Both);
+            Day17 d = new Day17();
+            d.Solve();
         }
     }
 }
