@@ -14,7 +14,7 @@ namespace Day20
     public class Day20 : AdventPuzzle
     {
         private Dictionary<(int x, int y), bool> map = new Dictionary<(int, int), bool>();
-
+        
         protected override string SolveFirstPuzzle()
         {
             string input = ReadInputText<string>();
@@ -52,25 +52,21 @@ namespace Day20
                     return current;
 
                 char c = regexString[i];
-
-                Console.Write(c);
                 
                 if (c == '(')
                 {
                     var branches = SplitRegex(regexString.Substring(i));
 
-                    //if (branches.Count > 2)
-                    //    Console.WriteLine("dsadas");
-                    current = branches.SelectMany(b => GenerateMap(b, current)).Distinct().ToList();      
+                    current = branches.SelectMany(b => GenerateMap(b, current)).Distinct().ToList();
 
-                    regexString = regexString.Replace("("+string.Join("|", branches)+")", "");
+                    string branchesString = $"({string.Join("|", branches)})";
+
+                    regexString = regexString.Substring(0, i) + regexString.Substring(i + branchesString.Length);
                     i--;
-                    DrawMap();
                 }
                 else
                 {
                     current = current.Select(curr => Move(c, curr)).ToList();
-                    DrawMap();
                 }
             }
         }
@@ -83,56 +79,6 @@ namespace Day20
             int maxY = map.Keys.Max(c => c.y);
 
             return (minX, maxX, minY, maxY);
-        }
-
-        private void DrawMap()
-        {
-            (int minX, int maxX, int minY, int maxY) = GetEdges();
-
-            int xdiff = maxX - minX + 1;
-            int ydiff = maxY - minY + 1;
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine();
-            for (int x = 0; x < xdiff + 2; x++)
-                sb.Append("#");
-            sb.AppendLine();
-
-            for (int y = 0; y < ydiff; y++)
-            {
-                bool vertical = false;
-                sb.Append('#');
-                for (int x = 0; x < xdiff; x++)
-                {
-                    if (map.TryGetValue((x + minX, y + minY), out bool door))
-                    {
-                        if (door)
-                        {
-                            if (vertical)
-                                sb.Append("|");
-                            else
-                                sb.Append("-");
-
-                            vertical = false;
-                        }
-                        else
-                        {
-                            sb.Append(".");
-                            vertical = true;
-                        }     
-                    }
-                    else
-                        sb.Append("#");
-                }
-
-                sb.Append('#');
-                sb.AppendLine();
-            }
-
-            for (int x = 0; x < xdiff +2; x++)
-                sb.Append("#");
-
-            Console.WriteLine(sb.ToString());
         }
 
         private (int x, int y) Move(char direction, (int x, int y) pos)
@@ -215,9 +161,7 @@ namespace Day20
             HashSet<Node> distances = new HashSet<Node>();
             Queue<Node> q = new Queue<Node>();
 
-            q.Enqueue(new Node() { Pos = (0, 0), Distance = 0});
-          
-            //visited.Add((0,0));
+            q.Enqueue(new Node() { Pos = (0, 0), Distance = 0}); 
 
             while (true)
             {
@@ -227,7 +171,7 @@ namespace Day20
                 var current = q.Dequeue();
                 visited.Add(current.Pos);
 
-                if (!map.ContainsKey(current.Pos)) //wall
+                if (!map.ContainsKey(current.Pos)) //stop searching if on wall
                     continue;
 
                 if (!map[current.Pos])
@@ -262,6 +206,56 @@ namespace Day20
                 Pos = newPos,
                 Distance = current.Distance + 1
             });
+        }
+
+        private void DrawMap()
+        {
+            (int minX, int maxX, int minY, int maxY) = GetEdges();
+
+            int xdiff = maxX - minX + 1;
+            int ydiff = maxY - minY + 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            for (int x = 0; x < xdiff + 2; x++)
+                sb.Append("#");
+            sb.AppendLine();
+
+            for (int y = 0; y < ydiff; y++)
+            {
+                bool vertical = false;
+                sb.Append('#');
+                for (int x = 0; x < xdiff; x++)
+                {
+                    if (map.TryGetValue((x + minX, y + minY), out bool door))
+                    {
+                        if (door)
+                        {
+                            if (vertical)
+                                sb.Append("|");
+                            else
+                                sb.Append("-");
+
+                            vertical = false;
+                        }
+                        else
+                        {
+                            sb.Append(".");
+                            vertical = true;
+                        }
+                    }
+                    else
+                        sb.Append("#");
+                }
+
+                sb.Append('#');
+                sb.AppendLine();
+            }
+
+            for (int x = 0; x < xdiff + 2; x++)
+                sb.Append("#");
+
+            Console.WriteLine(sb.ToString());
         }
 
     }

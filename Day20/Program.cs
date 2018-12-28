@@ -12,7 +12,7 @@ namespace Day20
         static void Main(string[] args)
         {
             Day20 d = new Day20();
-            d.Solve(Util.Puzzle.Second);
+            d.Solve(Util.Puzzle.Both);
         }
     }
 }
